@@ -3,9 +3,9 @@
 
 name: Bots
 
-on:
-  schedule:
-    - cron: '0 1 * * *'
+# on:
+#   schedule:
+#     - cron: '0 1 * * *'
       # minute (0 - 59) hour (0 - 23) day of the month (1 - 31) month (1 - 12) day of the week (0 - 6) UTC
       # Above should be 6:30 AM IST, but for some reason, it is actuall 8:30AM IST. TODO??
       # https://github.com/github/feedback/discussions/13454
