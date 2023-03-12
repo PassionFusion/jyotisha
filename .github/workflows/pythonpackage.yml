@@ -66,33 +66,4 @@ jobs:
           user: __token__
           skip_existing: true
           password: ${{ secrets.PYPI_API_TOKEN }}
-      - name: Regenerate calendars
-        run: |
-          python -m "jyotisha.panchaanga.writer.generation_project"
-      - name: Setup Hugo
-        uses: peaceiris/actions-hugo@v2
-        with:
-          hugo-version: "0.83.1"
-      - name: Build hugo site pages
-        id: hugo_build
-        run: |
-          cd hugo-source
-          rm -rf build_github
-          hugo
-          cd ..
-      # MD files are useful for certain bots.
-      - name: Deploy md
-        uses: peaceiris/actions-gh-pages@v3
-        if: ${{ github.event_name != 'pull_request' && steps.hugo_build.conclusion == 'success'}}
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./hugo-source/content/output
-          publish_branch: generated-output
-          keep_files: true
-      - name: Deploy html
-        uses: peaceiris/actions-gh-pages@v3
-        if: ${{ github.event_name != 'pull_request' && steps.hugo_build.conclusion == 'success'}}
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./hugo-source/build_github
-          force_orphan: true # git history growth - even on non-src branches - makes cloning slow.
+
