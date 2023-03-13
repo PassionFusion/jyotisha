@@ -16,7 +16,7 @@ flask_restplus
 flask_cors
 jsonpickle
 methodtools
-Werkzeug
+Werkzeug==0.16.1
 timebudget
 Flask
 pypandoc
