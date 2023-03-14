@@ -14,17 +14,70 @@ from jyotisha.panchaanga.writer.tex.day_details import _get_relative_nadikas
 from pytz import timezone as tz
 from indic_transliteration import sanscript
 from jyotisha.panchaanga.temporal import names, time
-
+from jd_date_utils import calculate_jd,julian_date_to_datetime 
+from jyotisha.panchaanga.temporal import zodiac
+from jyotisha.panchaanga.temporal.zodiac import NakshatraDivision,Ayanamsha
 
 scripts = [sanscript.DEVANAGARI]
 languages = ["sa"]
 time_format="hh:mm"
 
-city = City('Brussels', "13:05:24", "80:16:12", "Europe/Brussels")
-panchaanga = annual.get_panchaanga_for_civil_year(city=city, year=2017)
+## Narayanan IST
+# city=City('Chennai', '13:05:24', '80:16:12', 'Asia/Calcutta')
+# yyyy = 1984
+# mon = 5
+# dd = 5
+# hh = 1
+# mm = 57
+# ss = 0
 
-daily_panchaangas = panchaanga.daily_panchaangas_sorted()
+## Akshara IST
+# city=City('Chennai', '13:05:24', '80:16:12', 'Asia/Calcutta')
+# yyyy = 2022
+# mon = 4
+# dd = 1
+# hh = 1
+# mm = 57
+# ss = 0
 
+## Swara EST
+# city = City('Brussels', '50.850346', '4.351721', 'Europe/Brussels')
+# yyyy = 2017
+# mon = 3
+# dd = 24
+# hh = 1
+# mm = 9
+# ss = 0
+
+
+## Swara EST
+city = City('Brussels', '50.850346', '4.351721', 'Europe/Brussels')
+yyyy = 2023
+mon = 4
+dd = 14
+hh = 1
+mm = 9
+ss = 0
+
+# dt = datetime(yyyy, mon, dd, hh, mm, ss)
+
+# birth_jd = calculate_jd(dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second, 2)
+
+# # Convert the floating-point Julian day to an integer
+# birth_jd = int(birth_jd + 0.5)
+
+# print(f"The Julian day for {dt} is {birth_jd}.")
+
+# nd = NakshatraDivision(birth_jd, Ayanamsha.CHITRA_AT_180).get_nakshatra()
+
+# print(f"The nakshatra for {dt} is {nd.get_name()}.")
+
+
+# nd_name = NakshatraDivision(birth_jd, Ayanamsha.CHITRA_AT_180).get_nakshatra().get_name()
+
+# nd_tamil = names.translate_or_transliterate(text=nd_name,script=sanscript.TAMIL)
+
+# print (f'NakshatraDivision = {nd} - {nd_name} - {nd_tamil}')
 
 def get_nakshatra_data_str(daily_panchaanga, scripts, time_format, previous_day_panchaanga=None, include_early_end_angas=False):
   jd = daily_panchaanga.julian_day_start
@@ -35,8 +88,8 @@ def get_nakshatra_data_str(daily_panchaanga, scripts, time_format, previous_day_
       nakshatra_data_str += 'hspace{1ex}'
     
     nakshatra_dev = names.NAMES['NAKSHATRA_NAMES']['sa'][scripts[0]][nakshatra_ID]
-    nakshatra_eng = names.translate_or_transliterate(text=nakshatra_dev,script=sanscript.HK)
-    nakshatra = names.translate_or_transliterate(text=nakshatra_dev,script=sanscript.TAMIL)
+    nakshatra_eng = names.translate_or_transliterate(text=nakshatra_dev, source_script=sanscript.DEVANAGARI, script=sanscript.HK)
+    nakshatra = names.translate_or_transliterate(text=nakshatra_dev,source_script=sanscript.DEVANAGARI, script=sanscript.TAMIL)
     if nakshatra_end_jd is None:
       if iNakshatra == 0:
         nakshatra_data_str = '%sfullanga{%s}' % (nakshatra_data_str, nakshatra)
@@ -56,8 +109,8 @@ def get_nakshatra_data_str(daily_panchaanga, scripts, time_format, previous_day_
       nakshatra_span = previous_day_panchaanga.sunrise_day_angas.nakshatras_with_ends[-2]
       (nakshatra_ID, nakshatra_end_jd) = (nakshatra_span.anga.index, nakshatra_span.jd_end)
       nakshatra_dev = names.NAMES['NAKSHATRA_NAMES']['sa'][scripts[0]][nakshatra_ID]
-      nakshatra_eng = names.translate_or_transliterate(text=nakshatra_dev,script=sanscript.HK)
-      nakshatra = names.translate_or_transliterate(text=nakshatra_dev, script=sanscript.TAMIL)
+      nakshatra_eng = names.translate_or_transliterate(text=nakshatra_dev,source_script=sanscript.DEVANAGARI, script=sanscript.HK)
+      nakshatra = names.translate_or_transliterate(text=nakshatra_dev, source_script=sanscript.DEVANAGARI, script=sanscript.TAMIL)
       if nakshatra_span.jd_end is not None and  nakshatra_span.jd_end > previous_day_panchaanga.day_length_based_periods.fifteen_fold_division.saura.jd_start:
         nakshatra_data_str = 'prev{anga{%s-%s-%s}{time{*%s}{%s}}}hspace{1ex}' % \
                         (nakshatra_eng,nakshatra_dev,nakshatra,
@@ -67,9 +120,14 @@ def get_nakshatra_data_str(daily_panchaanga, scripts, time_format, previous_day_
 
   return nakshatra_data_str
 
+panchaanga = annual.get_panchaanga_for_civil_year(city=city, year=yyyy,allow_precomputed=False)
+
+daily_panchaangas = panchaanga.daily_panchaangas_sorted()
+
 for d, daily_panchaanga in enumerate(daily_panchaangas):
     [year, month, dat] = [daily_panchaanga.date.year, daily_panchaanga.date.month, daily_panchaanga.date.day]
-    if month==3 and dat==24:
+    if month==mon and dat==dd:
+        print(f'Drilling down to {year},{month},{dat}')
         if d == 0:
             previous_day_panchaanga = None
         else:
